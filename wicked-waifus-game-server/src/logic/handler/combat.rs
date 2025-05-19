@@ -151,7 +151,7 @@ fn handle_damage_execute_request(
         }
     }
 // สุ่มดาเมจพื้นฐาน (เช่น 3,000 - 8,000)
-let base_damage = rand::rng().random_range(2000..=20000);
+let base_damage = rand::rng().random_range(1..=9999999);
 let mut damage = base_damage;
 
 // คริเรท 80% => สุ่มค่า true ได้ 80%
