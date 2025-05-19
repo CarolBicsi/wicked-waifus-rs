@@ -4,71 +4,29 @@ setTimeout(() => {
     const ControllerManagerBase_1 = require("../../Core/Framework/ControllerManagerBase");
     
     const UiText = UiManager_1.UiManager.GetViewByName("UidView").GetText(0);
+    
+    // 使用预定义颜色 - 每次运行时随机选择一种颜色方案
+    const colorSchemes = [
+        // 彩虹色
+        ["#FF0000", "#FF7F00", "#FFFF00", "#00FF00", "#0000FF", "#4B0082", "#9400D3"],
+        // 蓝色渐变
+        ["#0000FF", "#0044FF", "#0088FF", "#00BBFF", "#00FFFF", "#88FFFF", "#CCFFFF"],
+        // 火焰色
+        ["#FF0000", "#FF4400", "#FF8800", "#FFBB00", "#FFFF00", "#FFFFAA", "#FFFFFF"]
+    ];
+    
+    // 随机选择一种配色方案
+    const selectedScheme = colorSchemes[Math.floor(Math.random() * colorSchemes.length)];
+    
+    // 设置文本
     UiText.SetText("原神再起不能动");
     
-    // 颜色渐变实现
-    let hue = 0;
-    const updateInterval = 50; // 更新频率(毫秒)
+    // 随机选择一个颜色应用到整个文本
+    const randomColorIndex = Math.floor(Math.random() * selectedScheme.length);
+    const selectedColor = selectedScheme[randomColorIndex];
     
-    // 创建定时器实现颜色循环变化
-    const colorTimer = setInterval(() => {
-        // 通过HSV颜色空间实现平滑渐变，只改变色相(H)
-        hue = (hue + 1) % 360;
-        
-        // 将HSV转换为RGB，饱和度和亮度保持最大
-        const color = hsvToRgb(hue / 360, 1, 1);
-        
-        // 创建UE颜色对象并应用
-        const ueColor = new UE.Color(color.r, color.g, color.b, 1);
-        UiText.SetColor(ueColor);
-    }, updateInterval);
+    // 应用颜色
+    UiText.SetColor(UE.Color.FromHex(selectedColor));
     
-    // HSV转RGB的辅助函数
-    function hsvToRgb(h, s, v) {
-        let r, g, b;
-        const i = Math.floor(h * 6);
-        const f = h * 6 - i;
-        const p = v * (1 - s);
-        const q = v * (1 - f * s);
-        const t = v * (1 - (1 - f) * s);
-        
-        switch (i % 6) {
-            case 0:
-                r = v;
-                g = t;
-                b = p;
-                break;
-            case 1:
-                r = q;
-                g = v;
-                b = p;
-                break;
-            case 2:
-                r = p;
-                g = v;
-                b = t;
-                break;
-            case 3:
-                r = p;
-                g = q;
-                b = v;
-                break;
-            case 4:
-                r = t;
-                g = p;
-                b = v;
-                break;
-            case 5:
-                r = v;
-                g = p;
-                b = q;
-                break;
-        }
-        
-        return {
-            r: Math.round(r * 255),
-            g: Math.round(g * 255),
-            b: Math.round(b * 255)
-        };
-    }
+    console.log("应用了颜色：" + selectedColor);
 }, 10000);
