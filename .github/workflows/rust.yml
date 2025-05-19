@@ -1,0 +1,55 @@
+name: Rust CI (Multi-OS)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-and-test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]  # 三个平台并行
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive  # 递归克隆子模块
+
+    - name: Install protoc (Linux/macOS)
+      if: matrix.os != 'windows-latest'
+      run: |
+        if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+          sudo apt update && sudo apt install -y protobuf-compiler
+        elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+          brew install protobuf
+        fi
+        protoc --version
+
+    - name: Install protoc (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        # 使用 Chocolatey 安装 protoc
+        choco install protoc
+        refreshenv
+        protoc --version
+
+    - name: Build
+      run: cargo build --verbose
+
+    - name: Run tests
+      run: cargo test --verbose
+
+    - name: Verify servers
+      run: |
+        # 测试所有二进制文件是否能启动（不长期运行）
+        cargo run --bin wicked-waifus-config-server -- --help
+        cargo run --bin wicked-waifus-hotpatch-server -- --help
+        cargo run --bin wicked-waifus-login-server -- --help
+        cargo run --bin wicked-waifus-gateway-server -- --help
+        cargo run --bin wicked-waifus-game-server -- --help
