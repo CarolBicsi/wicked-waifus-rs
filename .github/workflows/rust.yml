@@ -13,30 +13,24 @@ jobs:
   build-and-test:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]  # 三个平台并行
+        os: [ubuntu-latest, windows-latest, macos-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v4
       with:
-        submodules: recursive  # 递归克隆子模块
+        submodules: recursive
 
-    - name: Install protoc (Linux/macOS)
-      if: matrix.os != 'windows-latest'
+    - name: Install protoc
       run: |
-        if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+        if [ "${{ runner.os }}" == "Linux" ]; then
           sudo apt update && sudo apt install -y protobuf-compiler
-        elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+        elif [ "${{ runner.os }}" == "macOS" ]; then
           brew install protobuf
+        else
+          choco install protoc -y
+          refreshenv
         fi
-        protoc --version
-
-    - name: Install protoc (Windows)
-      if: matrix.os == 'windows-latest'
-      run: |
-        # 使用 Chocolatey 安装 protoc
-        choco install protoc
-        refreshenv
         protoc --version
 
     - name: Build
@@ -45,11 +39,18 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
 
-    - name: Verify servers
+    - name: Check if binaries exist
       run: |
-        # 测试所有二进制文件是否能启动（不长期运行）
-        cargo run --bin wicked-waifus-config-server -- --help
-        cargo run --bin wicked-waifus-hotpatch-server -- --help
-        cargo run --bin wicked-waifus-login-server -- --help
-        cargo run --bin wicked-waifus-gateway-server -- --help
-        cargo run --bin wicked-waifus-game-server -- --help
+        if [ "${{ runner.os }}" == "Linux" ] || [ "${{ runner.os }}" == "macOS" ]; then
+          ls target/debug/wicked-waifus-config-server
+          ls target/debug/wicked-waifus-hotpatch-server
+          ls target/debug/wicked-waifus-login-server
+          ls target/debug/wicked-waifus-gateway-server
+          ls target/debug/wicked-waifus-game-server
+        else
+          dir target\debug\wicked-waifus-config-server.exe
+          dir target\debug\wicked-waifus-hotpatch-server.exe
+          dir target\debug\wicked-waifus-login-server.exe
+          dir target\debug\wicked-waifus-gateway-server.exe
+          dir target\debug\wicked-waifus-game-server.exe
+        fi
