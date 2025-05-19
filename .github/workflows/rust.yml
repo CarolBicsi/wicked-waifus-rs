@@ -13,24 +13,30 @@ jobs:
   build-and-test:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]  # 三个平台并行
     runs-on: ${{ matrix.os }}
 
     steps:
     - uses: actions/checkout@v4
       with:
-        submodules: recursive
+        submodules: recursive  # 递归克隆子模块
 
-    - name: Install protoc
+    - name: Install protoc (Linux/macOS)
+      if: matrix.os != 'windows-latest'
       run: |
-        if [ "${{ runner.os }}" == "Linux" ]; then
+        if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
           sudo apt update && sudo apt install -y protobuf-compiler
-        elif [ "${{ runner.os }}" == "macOS" ]; then
+        elif [ "${{ matrix.os }}" == "macos-latest" ]; then
           brew install protobuf
-        else
-          choco install protoc -y
-          refreshenv
         fi
+        protoc --version
+
+    - name: Install protoc (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        # 使用 Chocolatey 安装 protoc
+        choco install protoc
+        refreshenv
         protoc --version
 
     - name: Build
