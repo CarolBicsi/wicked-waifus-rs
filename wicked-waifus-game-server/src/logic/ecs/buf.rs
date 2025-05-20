@@ -1,7 +1,6 @@
 use std::collections::{HashMap, VecDeque};
 use std::sync::atomic::{AtomicI32, Ordering};
 use wicked_waifus_protocol::FightBuffInformation;
-
 pub struct BufManager {
     active_buf_set: HashMap<i32, FightBuffInformation>,
     next_handle: AtomicI32,
@@ -11,6 +10,13 @@ pub struct BufManager {
 const OVERRIDE_BUFFS: &[i64] = &[
     3003,       // Remove wall run prohibition
     3004,       // Remove gliding prohibition
+    3077,
+    640012051,
+    1103430110,
+    3155,
+    3156,
+    640012028,
+    83012106,
     1213,       // Reduce stamina while flying
     1214,       // Reduce stamina while flying in sprint
     1215,       // Reduce stamina while flying up in sprint
