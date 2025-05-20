@@ -1,8 +1,8 @@
+use crate::logic::player::player_inventory::PlayerInventory;
 use wicked_waifus_protocol::{
     player_attr, BasicInfoNotify, PlayerAttr, PlayerAttrKey, PlayerAttrType,
 };
 use wicked_waifus_protocol_internal::PlayerBasicData;
-use crate::logic::player::player_inventory::PlayerInventory;
 
 pub struct PlayerBasicInfo {
     pub id: i32,
@@ -31,8 +31,8 @@ impl PlayerBasicInfo {
                 build_str_attr(PlayerAttrKey::Name, self.name.as_str()),
                 build_str_attr(PlayerAttrKey::Sign, ""), // TODO:
                 build_int_attr(PlayerAttrKey::Sex, self.sex),
-                build_int_attr(PlayerAttrKey::OriginWorldLevel, 1), // TODO:
-                build_int_attr(PlayerAttrKey::CurWorldLevel, 1), // TODO:
+                build_int_attr(PlayerAttrKey::OriginWorldLevel, 8), // TODO:
+                build_int_attr(PlayerAttrKey::CurWorldLevel, 8), // TODO:
                 build_int_attr(PlayerAttrKey::WorldLevelTimeStamp, 0), // TODO:
                 build_int_attr(PlayerAttrKey::CashCoin, inventory.get_lunite()),
                 build_int_attr(PlayerAttrKey::WorldPermission, 0), // TODO:
@@ -75,10 +75,10 @@ impl PlayerBasicInfo {
 impl Default for PlayerBasicInfo {
     fn default() -> Self {
         Self {
-            id: 0,
+            id: 52021313,
             name: "".to_string(),
             sex: 0,
-            level: 0,
+            level: 80,
             exp: 0,
             head_photo: 0,
             head_frame: 0,

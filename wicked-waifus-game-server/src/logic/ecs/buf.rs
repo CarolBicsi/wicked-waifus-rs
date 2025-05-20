@@ -16,6 +16,8 @@ const OVERRIDE_BUFFS: &[i64] = &[
     1215,       // Reduce stamina while flying up in sprint
     1216,       // Reduce stamina while flying down in sprint
     640012051,  // Allow flying -> tag: 1151923109
+    621030104,
+    671000224,
 ];
 
 const ROLE_OVERRIDES: &[(i32, &[i64])] = &[
@@ -79,24 +81,24 @@ impl BufManager {
     pub fn create_permanent_buffs(&mut self, origin_id: i64, role_id: i32) -> Vec<FightBuffInformation> {
         let mut buffs = wicked_waifus_data::buff_data::iter().filter(|(id, buf)| {
             id.to_string().starts_with(&role_id.to_string()) // must be part of char kit :)
-            && 
-            (
-                !id.to_string().contains("666")// KURO IS EVIL
-                && 
-                buf.duration_policy == 1
-            )
+                &&
+                (
+                    !id.to_string().contains("666") // KURO IS EVIL
+                        &&
+                        buf.duration_policy == 1
+                )
             // && 
             // !buf.ge_desc.contains("【废弃】") // remove "deprecated" buffs
         })
-        .map(|x| *x.0)
-        .collect::<Vec<i64>>();
+            .map(|x| *x.0)
+            .collect::<Vec<i64>>();
 
         buffs.extend(OVERRIDE_BUFFS.iter().copied());
         if let Some(role_buff_overrides) = get_role_buff_overrides(role_id) {
             buffs.extend(role_buff_overrides.iter().copied());
         }
         buffs.dedup();
-        
+
         buffs
             .iter()
             .map(|id| {
